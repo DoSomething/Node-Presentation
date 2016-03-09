@@ -1,0 +1,56 @@
+<div class="chrome">
+  <div class="wrapper">
+    <main>
+      <div class="container">
+        <div class="wrapper">
+          <div class="container__block -half">
+            <div class="simulators">
+              <h3>Preview</h3>
+              <div class="simulator -preview"></div>
+              <h3>Live</h3>
+              <div class="simulator -live"></div>
+            </div>
+          </div>
+          <div class="container__block -half controls">
+            <h1>Controls</h1>
+            <div class="form-actions">
+              <button class="button button-golive">GO LIVE! (Enter key)</button>
+            </div>
+            <div class="form-actions">
+              <button id="twitterbutton" class="button">Twitter</button>
+            </div>
+            <div class="form-actions">
+              <input id="godtext" type="text" class="text-field">
+              <button id="godbutton" class="button">Voice of God</button>
+            </div>
+            <div class="form-actions controls-timer">
+              <input id="timerinput" type="text" class="text-field">
+              <button id="timerdisplay" class="button">Display timer</button>
+              <button id="timerstart" class="button">Start timer</button>
+           </div>
+           <div class="slides">
+             <h1>Slides</h1>
+             {{#each slides}}
+                <ul class="gallery -triad -aligned">
+                {{#each this}}
+                  <li>
+                    <div class="figure">
+                      <div class="figure__media">
+                        <img class="controls-slide" src="{{this.path}}" binding={{this.binding}}>
+                      </div>
+                      <div class="figure__body">
+                        <h4 class="keybinding"><b>{{this.binding}}</b></h4>
+                        {{this.name}}
+                      </div>
+                    </div>
+                  </li>
+                {{/each}}
+                </ul>
+              {{/each}}
+           </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

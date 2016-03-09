@@ -1,45 +1,104 @@
-/**
- * Required vars
- */
-var hashtag = require('./config').twitter_hashtag;
-
-/**
- * Module dependencies.
- */
-
 var express = require('express');
-var routes = require('./routes');
-var http = require('http');
-var path = require('path');
-
 var app = express();
-var server = http.createServer(app);
-var io = require('./io')(require('socket.io').listen(server));
-var twitter = require('./twitter');
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
 
-// all environments
-app.set('port', process.env.PORT || 5000);
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-app.use(express.favicon());
-app.use(express.logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded());
-app.use(express.methodOverride());
-app.use(app.router);
+var exphbs = require('express-handlebars');
+app.engine('handlebars', exphbs({
+  defaultLayout: 'main',
+  partialsDir: [__dirname + '/views/partials'],
+  helpers: {
+  }
+}));
+app.set('view engine', 'handlebars');
+
+var path = require('path');
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'node_modules/@dosomething/forge/dist')));
 
-// development only
-if ('development' == app.get('env')) {
-  app.use(express.errorHandler());
+var slides = require(__dirname + '/slides');
+var twitter = require(__dirname + '/twitter');
+var previewState = {};
+var liveState = {};
+
+var timerId;
+function cancelExistingTimer() {
+  if (timerId != undefined) {
+    clearInterval(timerId);
+  }
 }
 
-app.get('/', routes.index);
-app.get('/present', routes.present);
-app.get('/slides.json', routes.slides);
-
-server.listen(app.get('port'), function(){
-  console.log('Express server listening on port ' + app.get('port'));
+app.get('/', function (req, res) {
+  res.render('present');
 });
 
-twitter.start(io, hashtag);
+app.get('/admin', function (req, res) {
+  res.render('admin', {"slides": slides.getSlides()});
+});
+
+io.on('connection', function (socket) {
+  socket.emit('slides', slides.getSlides());
+  socket.emit('event', {state: 'preview', type: previewState.type, data: previewState.data});
+  socket.emit('event', {state: 'live', type: liveState.type, data: liveState.data});
+
+  if (liveState.type == 'twitter') {
+    io.emit('event', {state: 'live', type: 'tweet', data: twitter.getPastTweets(), keep: true});
+  }
+
+  socket.on('preview-event', function (data) {
+    previewState.type = data.type;
+    previewState.data = data.data;
+    socket.broadcast.emit('event', {state: 'preview', type: previewState.type, data: previewState.data});
+  });
+
+  socket.on('golive', function (data) {
+    cancelExistingTimer();
+
+    liveState.type = previewState.type;
+    liveState.data = previewState.data;
+    io.emit('event', {state: 'live', type: liveState.type, data: liveState.data});
+
+    if (liveState.type == 'twitter') {
+      io.emit('event', {state: 'live', type: 'tweet', data: twitter.getPastTweets(), keep: true});
+    }
+  });
+
+  socket.on('starttimer', function (data) {
+    if (liveState.type.indexOf('timer') == -1) {
+      return;
+    }
+
+    cancelExistingTimer();
+
+    var ticks = liveState.data;
+    timerId = setInterval(function() {
+      io.emit('event', {state: 'live', type: 'timer-tick', data: ticks, keep: true});
+
+      if (ticks <= 0) {
+        cancelExistingTimer();
+        return;
+      }
+
+      if (ticks <= 5) {
+        io.emit('event', {state: 'live', type: 'timer-pulse', data: {}, keep: true});
+      }
+
+      ticks--;
+    }, 1000);
+  });
+
+});
+
+twitter.start(function(tweet) {
+  if (liveState.type != 'twitter') {
+    return;
+  }
+
+  io.emit('event', {state: 'live', type: 'tweet', data: tweet, keep: true});
+});
+
+slides.readSlides();
+
+server.listen(process.env.PORT, function() {
+  console.log("Listening on " + process.env.PORT);
+});

@@ -1,0 +1,137 @@
+.container__block {
+  padding-top: 8px !important;
+}
+
+.button-golive {
+  background-color: #ff4747;
+}
+
+.button-golive:hover, .button-golive:focus {
+  background-color: #fcd116;
+}
+
+.controls .form-actions {
+  text-align: left;
+}
+
+.form-actions input {
+  margin-bottom: 8px;
+}
+
+.controls-timer input {
+  max-width: 100px;
+  display: block;
+}
+
+.controls-slide:hover {
+  cursor: pointer;
+}
+
+.slides {
+  margin-top: 16px;
+}
+
+.keybinding {
+  color: #23b7fb;
+}
+
+.simulators {
+  position: fixed;
+}
+
+.simulators h3 {
+  margin-bottom: 0;
+}
+
+.simulator {
+  width: 480px;
+  height: 360px;
+  border: 1px solid #4e2b63;
+}
+
+.god-message {
+  color: #FFF;
+  font-weight: 800;
+  text-align: center;
+  /* Vertical Align */
+  position: relative;;
+  top: 50%;
+  left: 50%;
+  height: 50%;
+  width: 50%;
+  margin: -15% 0 0 -25%;
+}
+
+.simulator .god-message {
+  font-size: 26px;
+}
+
+.present-container .god-message {
+  font-size: 108px;
+}
+
+.simulator .countdown {
+  font-size: 48px;
+}
+
+.present-container, .simulator {
+  background-size: 100% 100% !important;
+}
+
+.present-container {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+.present-container .tweet-container {
+  width: 1400px;
+  display: block;
+  margin: 0 auto;
+}
+
+.present-container .tweet {
+  height: 200px;
+  padding-top: 32px;
+  margin-bottom: 32px;
+}
+
+.present-container .tweet.odd {
+  text-align: right;
+}
+
+.present-container .tweet .tweet-photo {
+  display: inline-block;
+  height: 196px;
+  width: 196px;
+  border-radius: 16px;
+  border: 2px solid #FFF;
+}
+
+.present-container .tweet .tweet-info {
+  display: inline-block;
+  width: 50%;
+  vertical-align: top;
+  margin: 0 16px;
+  margin-top: 8px;
+}
+
+.tweet-info p {
+  margin-top: -4px;
+  margin-bottom: 1px;
+  font-size: 28px !important;
+  vertical-align: text-top;
+  color: #FFF;
+  font-weight: 600;
+  font-style: italic;
+}
+
+.tweet-info p .-yellow {
+  color: #fcd116 !important;
+}
+
+.tweet-info p .-black {
+  color: #111 !important;
+}

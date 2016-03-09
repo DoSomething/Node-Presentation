@@ -1,14 +1,28 @@
 {
-  "name": "application-name",
-  "version": "0.0.1",
-  "private": true,
+  "name": "prez",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "foreman start -e var.env"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DoSomething/Node-Presentation.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DoSomething/Node-Presentation/issues"
+  },
+  "homepage": "https://github.com/DoSomething/Node-Presentation#readme",
   "dependencies": {
-    "express": "3.4.8",
-    "jade": "*",
-    "socket.io": "*",
-    "twitter": "*"
+    "@dosomething/forge": "^6.6.2",
+    "express": "^4.13.4",
+    "express-handlebars": "^3.0.0",
+    "path": "^0.12.7",
+    "socket.io": "^1.4.5",
+    "twitter": "^1.2.5"
   }
 }
