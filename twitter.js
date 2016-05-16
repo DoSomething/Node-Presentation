@@ -1,4 +1,4 @@
-var Twitter = new require('Twitter');
+var Twitter = require('twitter');
 var hashtag = '#DS2016';
 
 var client = new Twitter({
