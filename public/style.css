@@ -2,6 +2,28 @@
   padding-top: 8px !important;
 }
 
+.login {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.login .login-container {
+  background-color: #4e2b63;
+  padding: 16px;
+  position: absolute;
+  top: 10%;
+  left: 40%;
+}
+
+.login .login-container * {
+  margin: 4px;
+}
+
 .button-golive {
   background-color: #ff4747;
 }

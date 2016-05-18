@@ -46,7 +46,6 @@ function handleEvent($targetHtml, type, data, keepContents) {
       else {
         $targetHtml.children().prepend(data);
         if ($('.tweet').size() > 4) {
-          console.log($('.tweet').size());
           $('.tweet').last().remove();
         }
       }
@@ -54,8 +53,14 @@ function handleEvent($targetHtml, type, data, keepContents) {
   }
 }
 
-$(document).on('ready', function() {
-  var socket = io.connect(location.host);
+function handleGodButton(socket, password) {
+  var text = $('#godtext').val();
+  handleEvent($('.-preview'), 'god', text || '', false);
+  socket.emit('preview-event', {'type': 'god', 'data': text, 'password': password});
+}
+
+function startup(socket, password) {
+
   var slides = {};
 
   socket.on('slides', function (data) {
@@ -96,48 +101,42 @@ $(document).on('ready', function() {
   // Handle dat input
   // ---
 
-  function handleGodButton() {
-    var text = $('#godtext').val();
-    handleEvent($('.-preview'), 'god', text || '', false);
-    socket.emit('preview-event', {'type': 'god', 'data': text});
-  }
-
   $('#godbutton').click(function(e) {
-    handleGodButton();
+    handleGodButton(socket, password);
   });
 
   $('#timerdisplay').click(function(e) {
     var seconds = parseInt($('#timerinput').val()) || 60;
     handleEvent($('.-preview'), 'timer-display', seconds, false);
-    socket.emit('preview-event', {'type': 'timer-display', 'data': seconds});
+    socket.emit('preview-event', {'type': 'timer-display', 'data': seconds, 'password': password});
   });
 
   $('#timerstart').click(function(e) {
-    socket.emit('starttimer', {});
+    socket.emit('starttimer', {'password': password});
   });
 
   $('#twitterbutton').click(function(e) {
     handleEvent($('.-preview'), 'twitter', {}, false);
-    socket.emit('preview-event', {'type': 'twitter', 'data': {} });
+    socket.emit('preview-event', {'type': 'twitter', 'data': {}, 'password': password});
   });
 
   $('.controls-slide').click(function(e) {
     var path = $(this).attr('src').replace(/\s/g, "%20");
     handleEvent($('.-preview'), 'slide', path, false);
-    socket.emit('preview-event', {'type': 'slide', 'data': path});
+    socket.emit('preview-event', {'type': 'slide', 'data': path, 'password': password});
   });
 
   $('.button-golive').click(function(e) {
-    socket.emit('golive', {});
+    socket.emit('golive', {'password': password});
   });
 
   $(this).keydown(function(e) {
     var inputFocused = $('#godtext').is(':focus');
     if (e.keyCode == 13) {
       if (inputFocused) {
-        handleGodButton();
+        handleGodButton(socket, password);
       }
-      socket.emit('golive', {});
+      socket.emit('golive', {'password': password});
     }
     else if (!inputFocused) {
       var bind = String.fromCharCode(e.keyCode).toLowerCase();
@@ -145,7 +144,7 @@ $(document).on('ready', function() {
       if (slide != undefined) {
         var path = slide.path.replace(/\s/g, "%20");
         handleEvent($('.-preview'), 'slide', path, false);
-        socket.emit('preview-event', {'type': 'slide', 'data': path});
+        socket.emit('preview-event', {'type': 'slide', 'data': path, 'password': password});
       }
     }
   });
@@ -158,5 +157,21 @@ $(document).on('ready', function() {
       shiftPressed = false;
     }
   });
+}
 
+$(document).on('ready', function() {
+  var socket = io.connect(location.host);
+  var pass = "";
+
+  socket.on('login-response', function(data) {
+    if (data == true) {
+      $('.login').remove();
+      startup(socket, pass);
+    }
+  });
+
+  $('#password-subumit').on('click', function() {
+    pass = $('#password').val();
+    socket.emit('login', pass);
+  });
 });

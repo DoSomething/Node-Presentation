@@ -28,6 +28,10 @@ function cancelExistingTimer() {
   }
 }
 
+function verifyPassword(pass) {
+  return pass == process.env.CLIENT_PASSWORD;
+}
+
 app.get('/', function (req, res) {
   res.render('present');
 });
@@ -46,12 +50,20 @@ io.on('connection', function (socket) {
   }
 
   socket.on('preview-event', function (data) {
+    if (!verifyPassword(data.password)) {
+      return;
+    }
+
     previewState.type = data.type;
     previewState.data = data.data;
     socket.broadcast.emit('event', {state: 'preview', type: previewState.type, data: previewState.data});
   });
 
   socket.on('golive', function (data) {
+    if (!verifyPassword(data.password)) {
+      return;
+    }
+
     cancelExistingTimer();
 
     liveState.type = previewState.type;
@@ -64,6 +76,10 @@ io.on('connection', function (socket) {
   });
 
   socket.on('starttimer', function (data) {
+    if (!verifyPassword(data.password)) {
+      return;
+    }
+
     if (liveState.type.indexOf('timer') == -1) {
       return;
     }
@@ -85,6 +101,10 @@ io.on('connection', function (socket) {
 
       ticks--;
     }, 1000);
+  });
+
+  socket.on('login', function(password) {
+    socket.emit('login-response', verifyPassword(password));
   });
 
 });
