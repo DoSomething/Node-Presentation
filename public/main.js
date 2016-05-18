@@ -83,7 +83,39 @@ function handleEvent($targetHtml, type, data, keepContents) {
 }
 
 function handleGodButton(socket, password) {
-  var text = $('#godtext').val();
+  var rawText = $('#godtext').val();
+  var text = "";
+
+  var boldOpen = false;
+  var italicOpen = false;
+
+  for (var i = 0; i < rawText.length; i++) {
+    var c = rawText.charAt(i)
+    if (c == '*') {
+      if (boldOpen) {
+        text += "</b>";
+      }
+      else {
+        text += "<b>";
+      }
+
+      boldOpen = !boldOpen;
+    }
+    else if (c == '_') {
+      if (italicOpen) {
+        text += "</i>";
+      }
+      else {
+        text += "<i>";
+      }
+
+      italicOpen = !italicOpen;
+    }
+    else {
+      text += c;
+    }
+  }
+
   handleEvent($('.-preview'), 'god', text || '', false);
   socket.emit('preview-event', {'type': 'god', 'data': text, 'password': password});
 }
