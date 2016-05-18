@@ -105,6 +105,10 @@ io.on('connection', function (socket) {
 
   socket.on('login', function(password) {
     socket.emit('login-response', verifyPassword(password));
+    
+    socket.emit('slides', slides.getSlides());
+    socket.emit('event', {state: 'preview', type: previewState.type, data: previewState.data});
+    socket.emit('event', {state: 'live', type: liveState.type, data: liveState.data});
   });
 
 });

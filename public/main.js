@@ -1,3 +1,31 @@
+// Modified from http://stackoverflow.com/a/7873401/2129670
+function getOptimalFontSize($container) {
+  var fontSize = 14;
+  var changes = 0;
+  var success = true;
+  var div = $container[0];
+
+  while (div.scrollWidth <= div.clientWidth && div.scrollHeight <= div.clientHeight) {
+    div.style.fontSize = fontSize + 'px';
+    fontSize++;
+    changes++;
+    if (changes > 500) {
+        success = false;
+        break;
+    }
+  }
+
+  if (changes > 0) {
+    if (success) {
+      fontSize -= 2;
+    }
+    else {
+      fontSize -= changes;
+    }
+    div.style.fontSize = fontSize + "px";
+  }
+}
+
 function handleEvent($targetHtml, type, data, keepContents) {
 
   if (!keepContents) {
@@ -9,6 +37,7 @@ function handleEvent($targetHtml, type, data, keepContents) {
   switch (type) {
     case 'god':
       $targetHtml.append('<p class="god-message">' + data + '</p>');
+      getOptimalFontSize($targetHtml);
       $targetHtml.css('background', 'url(19.%20Voice%20of%20God.png)');
       break;
     case 'slide':
@@ -83,8 +112,6 @@ function startup(socket, password) {
     }
 
     if ($targetHtml == undefined) {
-      console.log("Undefined HMTL");
-      console.log(data);
       return;
     }
 
