@@ -1,0 +1,20 @@
+<div class="slides">
+  <h1>Slides</h1>
+  {{#each slides}}
+     <ul class="gallery -triad -aligned">
+     {{#each this}}
+       <li>
+         <div class="figure">
+           <div class="figure__media">
+             <img class="controls-slide" src="{{this.path}}" binding={{this.binding}}>
+           </div>
+           <div class="figure__body">
+             <h4 class="keybinding"><b>{{this.binding}}</b></h4>
+             {{this.name}}
+           </div>
+         </div>
+       </li>
+     {{/each}}
+     </ul>
+   {{/each}}
+</div>

@@ -18,6 +18,7 @@ app.use(express.static(path.join(__dirname, 'node_modules/@dosomething/forge/dis
 
 var slides = require(__dirname + '/slides');
 var twitter = require(__dirname + '/twitter');
+
 var previewState = {};
 var liveState = {};
 
@@ -41,10 +42,6 @@ app.get('/admin', function (req, res) {
 });
 
 io.on('connection', function (socket) {
-  socket.emit('slides', slides.getSlides());
-  socket.emit('event', {state: 'preview', type: previewState.type, data: previewState.data});
-  socket.emit('event', {state: 'live', type: liveState.type, data: liveState.data});
-
   if (liveState.type == 'twitter') {
     io.emit('event', {state: 'live', type: 'tweet', data: twitter.getPastTweets(), keep: true});
   }
@@ -105,7 +102,7 @@ io.on('connection', function (socket) {
 
   socket.on('login', function(password) {
     socket.emit('login-response', verifyPassword(password));
-    
+
     socket.emit('slides', slides.getSlides());
     socket.emit('event', {state: 'preview', type: previewState.type, data: previewState.data});
     socket.emit('event', {state: 'live', type: liveState.type, data: liveState.data});

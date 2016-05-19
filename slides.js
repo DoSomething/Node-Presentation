@@ -7,6 +7,10 @@ this.readSlides = function() {
   var files = fs.readdirSync(__dirname + '/public/slides');
   var row = [];
   files.forEach(function(element, index) {
+    if (element.split('.')[0] == '') {
+      return;
+    }
+    
     row.push({
       'path': '/slides/' + element,
       'binding': bindingOptions.pop(),
