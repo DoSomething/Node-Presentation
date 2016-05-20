@@ -80,6 +80,9 @@ function handleEvent($targetHtml, type, data, keepContents) {
       }
       else {
         $targetHtml.css('background-color', '#E84079');
+        if ($targetHtml.hasClass('-preview')) {
+          $targetHtml.append('<p>slide loop</p>');
+        }
       }
       break;
     case 'timer-display':
