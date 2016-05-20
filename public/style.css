@@ -2,6 +2,15 @@
 /* blue #00ACE4 */
 /* yellow #FFC10E */
 
+@font-face {
+  font-family: MuseoSans;
+  src: url("MuseoSans.otf") format("opentype");
+}
+
+* {
+  font-family: MuseoSans, serif !important;
+}
+
 .container__block {
   padding-top: 8px !important;
 }
@@ -34,6 +43,10 @@
 
 .button-golive:hover, .button-golive:focus {
   background-color: #fcd116;
+}
+
+.controls hr {
+  margin: 32px;
 }
 
 .controls .form-actions {
@@ -178,7 +191,10 @@
 .donation-message {
   color: #FFF;
   text-shadow: 0 1px 3px rgba(1, 1, 1, 0.3);
-  font-weight: 400;
   text-align: center;
   font-size: inherit;
+}
+
+.donation-message span {
+  text-shadow: 0 1px 3px rgba(255, 64, 121, 0.9);
 }

@@ -34,10 +34,10 @@ function addDonateText($targetHtml, $p) {
   $targetHtml.append($p);
 
   if ($targetHtml.hasClass('simulator')) {
-    $targetHtml.css('padding', '48px');
+    $targetHtml.css('padding', '56px');
   }
   else {
-    $targetHtml.css('padding', '148px');
+    $targetHtml.css('padding', '220px');
   }
 
   getOptimalFontSize($targetHtml);
@@ -58,13 +58,6 @@ function handleEvent($targetHtml, type, data, keepContents) {
       var $p = $(`<p class="god-message">${data}</p>`);
       $targetHtml.append($p);
 
-      if ($targetHtml.hasClass('simulator')) {
-        $targetHtml.css('padding', '48px');
-      }
-      else {
-        $targetHtml.css('padding', '148px');
-      }
-
       getOptimalFontSize($targetHtml);
       verticalAlignText($p, $targetHtml);
       $targetHtml.css('background', 'url(vog.png)');
@@ -79,6 +72,14 @@ function handleEvent($targetHtml, type, data, keepContents) {
       }
       else {
         $targetHtml.css('background', 'url(' + data + ')');
+      }
+      break;
+    case 'loop':
+      if (data) {
+        $targetHtml.css('background', `url(loop/${encodeURI(data)})`);
+      }
+      else {
+        $targetHtml.css('background-color', '#E84079');
       }
       break;
     case 'timer-display':
@@ -227,6 +228,11 @@ function startup(socket, password) {
     var path = $(this).attr('src').replace(/\s/g, "%20");
     handleEvent($('.-preview'), 'slide', path, false);
     socket.emit('preview-event', {'type': 'slide', 'data': path, 'password': password});
+  });
+
+  $('#slideloop').click(function(e) {
+    handleEvent($('.-preview'), 'loop', false, false);
+    socket.emit('preview-event', {'type': 'loop', 'data': false, 'password': password});
   });
 
   $('.button-golive').click(function(e) {

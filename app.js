@@ -17,6 +17,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules/@dosomething/forge/dist')));
 
 var slides = require(__dirname + '/slides');
+slides.setSlides(slides.readFiles('/slides', true));
+slides.setLoop(slides.readFiles('/loop', false));
+
 var twitter = require(__dirname + '/twitter');
 
 var previewState = {};
@@ -31,6 +34,30 @@ function cancelExistingTimer() {
 
 function verifyPassword(pass) {
   return pass == process.env.CLIENT_PASSWORD;
+}
+
+function doSlideLoop() {
+  if (liveState.type.indexOf('loop') == -1) {
+    return;
+  }
+
+  cancelExistingTimer();
+
+  var loop = slides.getLoop();
+  var index = 0;
+  io.emit('event', {state: 'live', type: 'loop', data: loop[index], keep: false});
+  index++;
+
+  timerId = setInterval(function() {
+    if (index >= loop.length) {
+      index = 0;
+    }
+
+    var img = loop[index];
+    io.emit('event', {state: 'live', type: 'loop', data: img, keep: false});
+
+    index++;
+  }, 10000);
 }
 
 app.get('/', function (req, res) {
@@ -69,6 +96,9 @@ io.on('connection', function (socket) {
 
     if (liveState.type == 'twitter') {
       io.emit('event', {state: 'live', type: 'tweet', data: twitter.getPastTweets(), keep: true});
+    }
+    else if (liveState.type == 'loop') {
+      doSlideLoop();
     }
   });
 
@@ -117,8 +147,6 @@ twitter.start(function(tweet) {
 
   io.emit('event', {state: 'live', type: 'tweet', data: tweet, keep: true});
 });
-
-slides.readSlides();
 
 server.listen(process.env.PORT, function() {
   console.log("Listening on " + process.env.PORT);
