@@ -30,6 +30,21 @@ function verticalAlignText($p, $container) {
   $p.css('margin-top', ($container.height() - $p.height()) / 2);
 }
 
+function addDonateText($targetHtml, $p) {
+  $targetHtml.append($p);
+
+  if ($targetHtml.hasClass('simulator')) {
+    $targetHtml.css('padding', '48px');
+  }
+  else {
+    $targetHtml.css('padding', '148px');
+  }
+
+  getOptimalFontSize($targetHtml);
+  verticalAlignText($p, $targetHtml);
+  $targetHtml.css('background', 'url(donations.png)');
+}
+
 function handleEvent($targetHtml, type, data, keepContents) {
 
   if (!keepContents) {
@@ -94,27 +109,12 @@ function handleEvent($targetHtml, type, data, keepContents) {
       }
       break;
     case 'donate':
-      $targetHtml.css('background', 'url(donations.png)');
-      var $container = $('<div class="donate-container"></div>');
-      // $container.append('<h3>TEXT <span>SPARK</span> TO <span>38383</span>');
-      $container.append('<div class="quote-container"></div>');
-      $targetHtml.append($container);
+      var $p = $('<p class="donation-message">TEXT <span>SPARK</span> TO <span>38383</span></p>');
+      addDonateText($targetHtml, $p);
       break;
     case 'donation':
-      var $container = $targetHtml.children().find('.quote-container');
-      if ($container.length == 0) {
-        handleEvent($targetHtml, 'donate', {}, false);
-        $container = $targetHtml.children().find('.quote-container');
-      }
-      $container.empty();
-
-      // var $message = $(`<p class="message">${data.message}<span class="donor">- ${data.name}</span></p>`);
-      // $container.append($message);
-      // $container.append(`<p class="donor">${data.name}</p>`);
-      $container.append(`${data.name}`);
-
-      getOptimalFontSize($container);
-      // verticalAlignText($message, $container);
+      var $p = $(`<p class="donation-message">${data}</p>`);
+      addDonateText($targetHtml, $p);
       break;
   }
 }
@@ -158,13 +158,10 @@ function handleGodButton(socket, password) {
 }
 
 function handleDonation(socket, password) {
-  var donation = {
-    message: $('#donatemessage').val(),
-    name: $('#donator').val() || 'anonymous'
-  };
+  var donation = $('#donatemessage').val();
 
-  handleEvent($('.-preview'), 'donation', donation, true);
-  socket.emit('preview-event', {'type': 'donation', 'data': donation, keep: true, 'password': password});
+  handleEvent($('.-preview'), 'donation', donation, false);
+  socket.emit('preview-event', {'type': 'donation', 'data': donation, 'password': password});
 }
 
 function startup(socket, password) {
@@ -247,7 +244,7 @@ function startup(socket, password) {
 
   $(this).keydown(function(e) {
     var godInputFocused = $('#godtext').is(':focus');
-    var donorInputFocused = $('#donatemessage').is(':focus') || $('#donator').is(':focus');
+    var donorInputFocused = $('#donatemessage').is(':focus');
     if (e.keyCode == 13) {
       if (godInputFocused) {
         handleGodButton(socket, password);
