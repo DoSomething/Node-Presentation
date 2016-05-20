@@ -42,9 +42,17 @@ function handleEvent($targetHtml, type, data, keepContents) {
     case 'god':
       var $p = $(`<p class="god-message">${data}</p>`);
       $targetHtml.append($p);
+
+      if ($targetHtml.hasClass('simulator')) {
+        $targetHtml.css('padding', '48px');
+      }
+      else {
+        $targetHtml.css('padding', '148px');
+      }
+
       getOptimalFontSize($targetHtml);
       verticalAlignText($p, $targetHtml);
-      $targetHtml.css('background', 'url(19.%20Voice%20of%20God.png)');
+      $targetHtml.css('background', 'url(vog.png)');
       break;
     case 'slide':
       if (data.endsWith('mp4')) {
@@ -86,9 +94,9 @@ function handleEvent($targetHtml, type, data, keepContents) {
       }
       break;
     case 'donate':
-      $targetHtml.css('background', 'url(puppet.gif)');
+      $targetHtml.css('background', 'url(donations.png)');
       var $container = $('<div class="donate-container"></div>');
-      $container.append('<h3>TEXT <span>SPARK</span> TO <span>38383</span>');
+      // $container.append('<h3>TEXT <span>SPARK</span> TO <span>38383</span>');
       $container.append('<div class="quote-container"></div>');
       $targetHtml.append($container);
       break;
@@ -100,13 +108,13 @@ function handleEvent($targetHtml, type, data, keepContents) {
       }
       $container.empty();
 
-      var $bubble = $(`<div class="chat-bubble">${data.message}</div>`);
-      var $donor = $(`<p class="donor">${data.name}</p>`);
-      if (data.name != "anonymous") {
-        $donor.css('color', '#23b7fb');
-      }
-      $bubble.append($donor);
-      $container.append($bubble);
+      // var $message = $(`<p class="message">${data.message}<span class="donor">- ${data.name}</span></p>`);
+      // $container.append($message);
+      // $container.append(`<p class="donor">${data.name}</p>`);
+      $container.append(`${data.name}`);
+
+      getOptimalFontSize($container);
+      // verticalAlignText($message, $container);
       break;
   }
 }
