@@ -62,7 +62,8 @@ function handleEvent($targetHtml, type, data, keepContents) {
         $targetHtml.css('padding', '56px');
       }
       else {
-        $targetHtml.css('padding', '220px');
+        $p.css('margin', '200px');
+        // $p.css('margin-bottom', '280px');
       }
 
       getOptimalFontSize($targetHtml);
