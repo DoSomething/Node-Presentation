@@ -58,6 +58,13 @@ function handleEvent($targetHtml, type, data, keepContents) {
       var $p = $(`<p class="god-message">${data}</p>`);
       $targetHtml.append($p);
 
+      if ($targetHtml.hasClass('simulator')) {
+        $targetHtml.css('padding', '56px');
+      }
+      else {
+        $targetHtml.css('padding', '220px');
+      }
+
       getOptimalFontSize($targetHtml);
       verticalAlignText($p, $targetHtml);
       $targetHtml.css('background', 'url(vog.png)');
@@ -113,8 +120,7 @@ function handleEvent($targetHtml, type, data, keepContents) {
       }
       break;
     case 'donate':
-      var $p = $('<p class="donation-message">TEXT <span>SPARK</span> TO <span>38383</span></p>');
-      addDonateText($targetHtml, $p);
+      $targetHtml.css('background', 'url(spark.png)');
       break;
     case 'donation':
       var $p = $(`<p class="donation-message">${data}</p>`);
@@ -162,7 +168,7 @@ function handleGodButton(socket, password) {
 }
 
 function handleDonation(socket, password) {
-  var donation = $('#donatemessage').val();
+  var donation = '"' + $('#donatemessage').val() + '"';
 
   handleEvent($('.-preview'), 'donation', donation, false);
   socket.emit('preview-event', {'type': 'donation', 'data': donation, 'password': password});

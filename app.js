@@ -17,10 +17,21 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules/@dosomething/forge/dist')));
 
 var slides = require(__dirname + '/slides');
-slides.setSlides(slides.readFiles('/slides', true));
-slides.setLoop(slides.readFiles('/loop', false));
+slides.addSlides(slides.readFiles('/slides', true, true));
+slides.addSlides(slides.readFiles('/lyrics_henry', true, false));
+slides.addSlides(slides.readFiles('/lyrics_rap', true, false));
+
+var rawLoop = slides.readFiles('/loop', false, false);
+slides.setLoop(slides.sortLoop(rawLoop));
 
 var twitter = require(__dirname + '/twitter');
+// twitter.start(function(tweet) {
+//   if (liveState.type != 'twitter') {
+//     return;
+//   }
+//
+//   io.emit('event', {state: 'live', type: 'tweet', data: tweet, keep: true});
+// });
 
 var previewState = {};
 var liveState = {};
@@ -44,20 +55,17 @@ function doSlideLoop() {
   cancelExistingTimer();
 
   var loop = slides.getLoop();
-  var index = 0;
-  io.emit('event', {state: 'live', type: 'loop', data: loop[index], keep: false});
-  index++;
+  var loopIndex = 0;
+  io.emit('event', {state: 'live', type: 'loop', data: loop[loopIndex], keep: false});
 
   timerId = setInterval(function() {
-    if (index >= loop.length) {
-      index = 0;
+    loopIndex++;
+    if (loopIndex >= loop.length) {
+      loopIndex = 0;
     }
-
-    var img = loop[index];
+    var img = loop[loopIndex];
     io.emit('event', {state: 'live', type: 'loop', data: img, keep: false});
-
-    index++;
-  }, 10000);
+  }, 15 * 1000);
 }
 
 app.get('/', function (req, res) {
@@ -65,7 +73,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/admin', function (req, res) {
-  res.render('admin', {"slides": slides.getSlides()});
+  res.render('admin', {"slideGroups": slides.getSlides()});
 });
 
 io.on('connection', function (socket) {
@@ -138,14 +146,6 @@ io.on('connection', function (socket) {
     socket.emit('event', {state: 'live', type: liveState.type, data: liveState.data});
   });
 
-});
-
-twitter.start(function(tweet) {
-  if (liveState.type != 'twitter') {
-    return;
-  }
-
-  io.emit('event', {state: 'live', type: 'tweet', data: tweet, keep: true});
 });
 
 server.listen(process.env.PORT, function() {

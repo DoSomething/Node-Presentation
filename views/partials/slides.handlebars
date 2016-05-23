@@ -1,21 +1,24 @@
 <div class="slides">
   <h1>Slides</h1>
-  {{#each slides}}
-     <ul class="gallery -triad -aligned">
-     {{#each this}}
-       <li>
-         <div class="figure">
-           <div class="figure__media">
-             <img class="controls-slide" src="{{this.path}}" binding={{this.binding}}>
+  {{#each slideGroups}}
+    <h3>{{this.name}}</h3>
+    {{#each this.storage}}
+       <ul class="gallery -triad -aligned">
+       {{#each this}}
+         <li>
+           <div class="figure">
+             <div class="figure__media">
+               <img class="controls-slide" src="{{this.path}}" binding={{this.binding}}>
+             </div>
+             <div class="figure__body">
+               <h4 class="keybinding"><b>{{this.binding}}</b></h4>
+               {{this.name}}
+             </div>
            </div>
-           <div class="figure__body">
-             <h4 class="keybinding"><b>{{this.binding}}</b></h4>
-             {{this.name}}
-           </div>
-         </div>
-       </li>
+         </li>
+       {{/each}}
+       </ul>
      {{/each}}
-     </ul>
    {{/each}}
    <div class="form-actions">
      <button id="slideloop" class="button">Activate Slide Loop</button>

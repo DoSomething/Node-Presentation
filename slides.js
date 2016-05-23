@@ -1,10 +1,10 @@
 var fs = require('fs');
 
-var slides = [];
+var slideGroups = [];
 var loop = [];
 var bindingOptions = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm'];
 
-this.readFiles = function(path, gallery) {
+this.readFiles = function(path, gallery, assignBinding) {
   var storage = [];
   var files = fs.readdirSync(`${__dirname}/public/${path}`);
   var row = [];
@@ -12,7 +12,7 @@ this.readFiles = function(path, gallery) {
   if (!gallery) {
     return files.filter(function(value) {
       return value.split('.')[0] != '';
-    });
+    }).reverse();
   }
 
   files.forEach(function(element, index) {
@@ -25,25 +25,60 @@ this.readFiles = function(path, gallery) {
       'binding': bindingOptions.pop(),
       'name': element
     });
-    if (index % 3 == 0) {
-      storage.unshift(row.slice());
+    if (row.length >= 3) {
+      storage.push(row.slice());
       row = [];
     }
   });
+
   if (row.length != 0) {
-    storage.unshift(row.slice());
+    storage.push(row.slice());
     row = [];
   }
 
-  return storage;
+  return {"name": path, "storage": storage};
 }
 
-this.setSlides = function(s) {
-  slides = s;
+this.sortLoop = function(rawLoop) {
+  var loop = [rawLoop.splice(0, 1)[0]];
+
+  while (rawLoop.length > 0) {
+    var l = rawLoop.splice(0, 1)[0].toLowerCase();
+
+    if (rawLoop.length == 1) {
+      loop.push(l);
+      break;
+    }
+
+    var toCompare = loop[loop.length - 1].toLowerCase();
+
+    if (toCompare.indexOf('reportback') == -1) {
+      if (l.indexOf('reportback') > -1) {
+        loop.push(l);
+      }
+      else {
+        rawLoop.push(l);
+      }
+    }
+    else if (toCompare.indexOf('reportback') != -1) {
+      if (l.indexOf('reportback') == -1) {
+        loop.push(l);
+      }
+      else {
+        rawLoop.push(l);
+      }
+    }
+  }
+
+  return loop;
+}
+
+this.addSlides = function(s) {
+  slideGroups.push(s);
 }
 
 this.getSlides = function() {
-  return slides;
+  return slideGroups;
 }
 
 this.setLoop = function(l) {
