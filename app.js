@@ -47,6 +47,7 @@ function verifyPassword(pass) {
   return pass == process.env.CLIENT_PASSWORD;
 }
 
+var loopIndex = 0;
 function doSlideLoop() {
   if (liveState.type.indexOf('loop') == -1) {
     return;
@@ -55,7 +56,6 @@ function doSlideLoop() {
   cancelExistingTimer();
 
   var loop = slides.getLoop();
-  var loopIndex = 0;
   io.emit('event', {state: 'live', type: 'loop', data: loop[loopIndex], keep: false});
 
   timerId = setInterval(function() {
