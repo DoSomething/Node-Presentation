@@ -20,9 +20,13 @@ this.readFiles = function(path, gallery, assignBinding) {
       return;
     }
 
+    if (assignBinding) {
+      var binding = bindingOptions.pop();
+    }
+
     row.push({
       'path': `${path}/${element}`,
-      'binding': bindingOptions.pop(),
+      'binding': binding,
       'name': element
     });
     if (row.length >= 3) {
