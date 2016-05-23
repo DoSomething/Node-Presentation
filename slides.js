@@ -43,7 +43,7 @@ this.sortLoop = function(rawLoop) {
   var loop = [rawLoop.splice(0, 1)[0]];
 
   while (rawLoop.length > 0) {
-    var l = rawLoop.splice(0, 1)[0].toLowerCase();
+    var l = rawLoop.splice(0, 1)[0];
 
     if (rawLoop.length == 1) {
       loop.push(l);
@@ -53,7 +53,7 @@ this.sortLoop = function(rawLoop) {
     var toCompare = loop[loop.length - 1].toLowerCase();
 
     if (toCompare.indexOf('reportback') == -1) {
-      if (l.indexOf('reportback') > -1) {
+      if (l.toLowerCase().indexOf('reportback') > -1) {
         loop.push(l);
       }
       else {
@@ -61,7 +61,7 @@ this.sortLoop = function(rawLoop) {
       }
     }
     else if (toCompare.indexOf('reportback') != -1) {
-      if (l.indexOf('reportback') == -1) {
+      if (l.toLowerCase().indexOf('reportback') == -1) {
         loop.push(l);
       }
       else {

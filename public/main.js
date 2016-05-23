@@ -179,10 +179,12 @@ function startup(socket, password) {
   var slides = {};
 
   socket.on('slides', function (data) {
-    data.forEach(function(row) {
-      row.forEach(function(slide) {
-        var binding = slide.binding;
-        slides[binding] = slide;
+    data.forEach(function(group) {
+      group.storage.forEach(function(row) {
+        row.forEach(function(slide) {
+          var binding = slide.binding;
+          slides[binding] = slide;
+        });
       });
     });
   });
