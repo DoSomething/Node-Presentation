@@ -1,3 +1,16 @@
+/* pink #E84079 */
+/* blue #00ACE4 */
+/* yellow #FFC10E */
+
+@font-face {
+  font-family: MuseoSans;
+  src: url("MuseoSans.otf") format("opentype");
+}
+
+* {
+  font-family: MuseoSans, serif !important;
+}
+
 .container__block {
   padding-top: 8px !important;
 }
@@ -32,8 +45,18 @@
   background-color: #fcd116;
 }
 
+.container.container__controls {
+  overflow-y: scroll;
+  height: 72%;
+}
+
+.controls hr {
+  margin: 32px;
+}
+
 .controls .form-actions {
   text-align: left;
+  margin: 24px 0;
 }
 
 .form-actions input {
@@ -53,12 +76,13 @@
   margin-top: 16px;
 }
 
-.keybinding {
-  color: #23b7fb;
+.slides .figure .figure__media {
+  height: 200px !important;
+  margin-bottom: 0 !important;
 }
 
-.simulators {
-  position: fixed;
+.keybinding {
+  color: #23b7fb;
 }
 
 .simulators h3 {
@@ -72,10 +96,14 @@
 }
 
 .god-message {
-  color: #FFF;
+  color: #111;
   font-weight: 400;
   text-align: center;
   font-size: inherit;
+}
+
+.-live .god-message {
+  line-height: 1.2em;
 }
 
 .god-message b {
@@ -152,57 +180,13 @@
   color: #111 !important;
 }
 
-.donate-container {
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.3);
-  -webkit-filter: none;
-  text-align: center;
-}
-
-.donate-container h3 {
-  font-size: 96px;
+.donation-message {
   color: #FFF;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 3px rgba(1, 1, 1, 0.3);
+  text-align: center;
+  font-size: inherit;
 }
 
-.donate-container span {
-  color: #23b7fb;
-  font-weight: 900;
-}
-
-.simulator .donate-container h3 {
-  font-size: 26px;
-}
-
-.donate-container .chat-bubble {
-  max-width: 60%;
-  float: right;
-  padding: 12px;
-  margin-right: 64px;
-  margin-top: 124px;
-  padding-left: 32px;
-  padding-right: 32px;
-  font-size: 72px;
-}
-
-.donate-container .donor {
-  margin-bottom: -80px;
-  margin-left: 80px;
-  padding-top: 24px;
-  font-size: 36px;
-}
-
-.simulator .donate-container .chat-bubble {
-  font-size: 16px;
-  margin-top: 24px;
-  padding-left: 16px;
-}
-
-.simulator .donate-container .donor {
-  font-size: 10px;
-  margin-bottom: -45px;
-  margin-left: 14px;
+.donation-message span {
+  text-shadow: 0 1px 3px rgba(255, 64, 121, 0.9);
 }

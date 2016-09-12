@@ -1,4 +1,4 @@
 node_modules/
-var.env
+.env
 *.DS_Store
 *.mp4

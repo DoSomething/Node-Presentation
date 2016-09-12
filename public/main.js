@@ -30,6 +30,21 @@ function verticalAlignText($p, $container) {
   $p.css('margin-top', ($container.height() - $p.height()) / 2);
 }
 
+function addDonateText($targetHtml, $p) {
+  $targetHtml.append($p);
+
+  if ($targetHtml.hasClass('simulator')) {
+    $targetHtml.css('padding', '56px');
+  }
+  else {
+    $targetHtml.css('padding', '220px');
+  }
+
+  getOptimalFontSize($targetHtml);
+  verticalAlignText($p, $targetHtml);
+  $targetHtml.css('background', 'url(donations.png)');
+}
+
 function handleEvent($targetHtml, type, data, keepContents) {
 
   if (!keepContents) {
@@ -42,9 +57,18 @@ function handleEvent($targetHtml, type, data, keepContents) {
     case 'god':
       var $p = $(`<p class="god-message">${data}</p>`);
       $targetHtml.append($p);
+
+      if ($targetHtml.hasClass('simulator')) {
+        $targetHtml.css('padding', '56px');
+      }
+      else {
+        $p.css('margin', '200px');
+        // $p.css('margin-bottom', '280px');
+      }
+
       getOptimalFontSize($targetHtml);
       verticalAlignText($p, $targetHtml);
-      $targetHtml.css('background', 'url(19.%20Voice%20of%20God.png)');
+      $targetHtml.css('background', 'url(vog.png)');
       break;
     case 'slide':
       if (data.endsWith('mp4')) {
@@ -56,6 +80,17 @@ function handleEvent($targetHtml, type, data, keepContents) {
       }
       else {
         $targetHtml.css('background', 'url(' + data + ')');
+      }
+      break;
+    case 'loop':
+      if (data) {
+        $targetHtml.css('background', `url(loop/${encodeURI(data)})`);
+      }
+      else {
+        $targetHtml.css('background-color', '#E84079');
+        if ($targetHtml.hasClass('-preview')) {
+          $targetHtml.append('<p>slide loop</p>');
+        }
       }
       break;
     case 'timer-display':
@@ -86,32 +121,16 @@ function handleEvent($targetHtml, type, data, keepContents) {
       }
       break;
     case 'donate':
-      $targetHtml.css('background', 'url(puppet.gif)');
-      var $container = $('<div class="donate-container"></div>');
-      $container.append('<h3>TEXT <span>SPARK</span> TO <span>38383</span>');
-      $container.append('<div class="quote-container"></div>');
-      $targetHtml.append($container);
+      $targetHtml.css('background', 'url(spark.png)');
       break;
     case 'donation':
-      var $container = $targetHtml.children().find('.quote-container');
-      if ($container.length == 0) {
-        handleEvent($targetHtml, 'donate', {}, false);
-        $container = $targetHtml.children().find('.quote-container');
-      }
-      $container.empty();
-
-      var $bubble = $(`<div class="chat-bubble">${data.message}</div>`);
-      var $donor = $(`<p class="donor">${data.name}</p>`);
-      if (data.name != "anonymous") {
-        $donor.css('color', '#23b7fb');
-      }
-      $bubble.append($donor);
-      $container.append($bubble);
+      var $p = $(`<p class="donation-message">${data}</p>`);
+      addDonateText($targetHtml, $p);
       break;
   }
 }
 
-function handleGodButton(socket, password) {
+function handleGodButton(socket) {
   var rawText = $('#godtext').val();
   var text = "";
 
@@ -146,28 +165,27 @@ function handleGodButton(socket, password) {
   }
 
   handleEvent($('.-preview'), 'god', text || '', false);
-  socket.emit('preview-event', {'type': 'god', 'data': text, 'password': password});
+  socket.emit('preview-event', {'type': 'god', 'data': text});
 }
 
-function handleDonation(socket, password) {
-  var donation = {
-    message: $('#donatemessage').val(),
-    name: $('#donator').val() || 'anonymous'
-  };
+function handleDonation(socket) {
+  var donation = '"' + $('#donatemessage').val() + '"';
 
-  handleEvent($('.-preview'), 'donation', donation, true);
-  socket.emit('preview-event', {'type': 'donation', 'data': donation, keep: true, 'password': password});
+  handleEvent($('.-preview'), 'donation', donation, false);
+  socket.emit('preview-event', {'type': 'donation', 'data': donation});
 }
 
-function startup(socket, password) {
+function startup(socket) {
 
   var slides = {};
 
   socket.on('slides', function (data) {
-    data.forEach(function(row) {
-      row.forEach(function(slide) {
-        var binding = slide.binding;
-        slides[binding] = slide;
+    data.forEach(function(group) {
+      group.storage.forEach(function(row) {
+        row.forEach(function(slide) {
+          var binding = slide.binding;
+          slides[binding] = slide;
+        });
       });
     });
   });
@@ -200,54 +218,59 @@ function startup(socket, password) {
   // ---
 
   $('#godbutton').click(function(e) {
-    handleGodButton(socket, password);
+    handleGodButton(socket);
   });
 
   $('#timerdisplay').click(function(e) {
     var seconds = parseInt($('#timerinput').val()) || 60;
     handleEvent($('.-preview'), 'timer-display', seconds, false);
-    socket.emit('preview-event', {'type': 'timer-display', 'data': seconds, 'password': password});
+    socket.emit('preview-event', {'type': 'timer-display', 'data': seconds});
   });
 
   $('#timerstart').click(function(e) {
-    socket.emit('starttimer', {'password': password});
+    socket.emit('starttimer');
   });
 
   $('#twitterbutton').click(function(e) {
     handleEvent($('.-preview'), 'twitter', {}, false);
-    socket.emit('preview-event', {'type': 'twitter', 'data': {}, 'password': password});
+    socket.emit('preview-event', {'type': 'twitter', 'data': {}});
   });
 
   $('.controls-slide').click(function(e) {
     var path = $(this).attr('src').replace(/\s/g, "%20");
     handleEvent($('.-preview'), 'slide', path, false);
-    socket.emit('preview-event', {'type': 'slide', 'data': path, 'password': password});
+    socket.emit('preview-event', {'type': 'slide', 'data': path});
+  });
+
+  $('#slideloop').click(function(e) {
+    handleEvent($('.-preview'), 'loop', false, false);
+    socket.emit('preview-event', {'type': 'loop', 'data': false});
   });
 
   $('.button-golive').click(function(e) {
-    socket.emit('golive', {'password': password});
+    socket.emit('golive');
   });
 
   $('#donatemode').click(function(e) {
     handleEvent($('.-preview'), 'donate', {}, false);
-    socket.emit('preview-event', {'type': 'donate', 'data': {}, 'password': password});
+    socket.emit('preview-event', {'type': 'donate', 'data': {}});
   });
 
   $('#donatedisplay').click(function(e) {
-    handleDonation(socket, password);
+    handleDonation(socket);
   });
 
   $(this).keydown(function(e) {
     var godInputFocused = $('#godtext').is(':focus');
-    var donorInputFocused = $('#donatemessage').is(':focus') || $('#donator').is(':focus');
+    var donorInputFocused = $('#donatemessage').is(':focus');
     if (e.keyCode == 13) {
       if (godInputFocused) {
-        handleGodButton(socket, password);
+        handleGodButton(socket);
       }
       else if (donorInputFocused) {
-        handleDonation(socket, password);
+        handleDonation(socket);
       }
-      socket.emit('golive', {'password': password});
+      socket.emit('golive');
     }
     else if (!godInputFocused && !donorInputFocused) {
       var bind = String.fromCharCode(e.keyCode).toLowerCase();
@@ -255,34 +278,13 @@ function startup(socket, password) {
       if (slide != undefined) {
         var path = slide.path.replace(/\s/g, "%20");
         handleEvent($('.-preview'), 'slide', path, false);
-        socket.emit('preview-event', {'type': 'slide', 'data': path, 'password': password});
+        socket.emit('preview-event', {'type': 'slide', 'data': path});
       }
-    }
-  });
-
-  $(this).keydown(function(e) {
-    if (e.keyCode == 13) {
-      enterPressed = false;
-    }
-    else if(e.shiftKey) {
-      shiftPressed = false;
     }
   });
 }
 
 $(document).on('ready', function() {
   var socket = io.connect(location.host);
-  var pass = "";
-
-  socket.on('login-response', function(data) {
-    if (data == true) {
-      $('.login').remove();
-      startup(socket, pass);
-    }
-  });
-
-  $('#password-subumit').on('click', function() {
-    pass = $('#password').val();
-    socket.emit('login', pass);
-  });
+  startup(socket);
 });
