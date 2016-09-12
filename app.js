@@ -1,9 +1,20 @@
-var express = require('express');
-var app = express();
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
+const express = require('express');
+const app = express();
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
 
-var exphbs = require('express-handlebars');
+const auth = require('basic-auth');
+app.use(function(req, res, next) {
+  const user = auth(req);
+  if (!user || user.name != process.env.CLIENT_USERNAME || user.pass != process.env.CLIENT_PASSWORD) {
+    res.set('WWW-Authenticate', 'Basic realm="dosomething-presentation"');
+    return res.status(401).send();
+  }
+
+  return next();
+});
+
+const exphbs = require('express-handlebars');
 app.engine('handlebars', exphbs({
   defaultLayout: 'main',
   partialsDir: [__dirname + '/views/partials'],
@@ -12,26 +23,24 @@ app.engine('handlebars', exphbs({
 }));
 app.set('view engine', 'handlebars');
 
-var path = require('path');
+const path = require('path');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules/@dosomething/forge/dist')));
 
-var slides = require(__dirname + '/slides');
+const slides = require(__dirname + '/slides');
 slides.addSlides(slides.readFiles('/slides', true, true));
-slides.addSlides(slides.readFiles('/lyrics_henry', true, false));
-slides.addSlides(slides.readFiles('/lyrics_rap', true, false));
 
-var rawLoop = slides.readFiles('/loop', false, false);
+const rawLoop = slides.readFiles('/loop', false, false);
 slides.setLoop(slides.sortLoop(rawLoop));
 
-var twitter = require(__dirname + '/twitter');
-// twitter.start(function(tweet) {
-//   if (liveState.type != 'twitter') {
-//     return;
-//   }
-//
-//   io.emit('event', {state: 'live', type: 'tweet', data: tweet, keep: true});
-// });
+const twitter = require(__dirname + '/twitter');
+twitter.start(function(tweet) {
+  if (liveState.type != 'twitter') {
+    return;
+  }
+
+  io.emit('event', {state: 'live', type: 'tweet', data: tweet, keep: true});
+});
 
 var previewState = {};
 var liveState = {};
@@ -41,10 +50,6 @@ function cancelExistingTimer() {
   if (timerId != undefined) {
     clearInterval(timerId);
   }
-}
-
-function verifyPassword(pass) {
-  return pass == process.env.CLIENT_PASSWORD;
 }
 
 var loopIndex = 0;
@@ -77,25 +82,21 @@ app.get('/admin', function (req, res) {
 });
 
 io.on('connection', function (socket) {
+  socket.emit('slides', slides.getSlides());
+  socket.emit('event', {state: 'preview', type: previewState.type, data: previewState.data});
+  socket.emit('event', {state: 'live', type: liveState.type, data: liveState.data});
+
   if (liveState.type == 'twitter') {
     io.emit('event', {state: 'live', type: 'tweet', data: twitter.getPastTweets(), keep: true});
   }
 
   socket.on('preview-event', function (data) {
-    if (!verifyPassword(data.password)) {
-      return;
-    }
-
     previewState.type = data.type;
     previewState.data = data.data;
     socket.broadcast.emit('event', {state: 'preview', type: previewState.type, data: previewState.data});
   });
 
   socket.on('golive', function (data) {
-    if (!verifyPassword(data.password)) {
-      return;
-    }
-
     cancelExistingTimer();
 
     liveState.type = previewState.type;
@@ -111,10 +112,6 @@ io.on('connection', function (socket) {
   });
 
   socket.on('starttimer', function (data) {
-    if (!verifyPassword(data.password)) {
-      return;
-    }
-
     if (liveState.type.indexOf('timer') == -1) {
       return;
     }
@@ -137,15 +134,6 @@ io.on('connection', function (socket) {
       ticks--;
     }, 1000);
   });
-
-  socket.on('login', function(password) {
-    socket.emit('login-response', verifyPassword(password));
-
-    socket.emit('slides', slides.getSlides());
-    socket.emit('event', {state: 'preview', type: previewState.type, data: previewState.data});
-    socket.emit('event', {state: 'live', type: liveState.type, data: liveState.data});
-  });
-
 });
 
 server.listen(process.env.PORT, function() {

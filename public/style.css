@@ -45,12 +45,18 @@
   background-color: #fcd116;
 }
 
+.container.container__controls {
+  overflow-y: scroll;
+  height: 72%;
+}
+
 .controls hr {
   margin: 32px;
 }
 
 .controls .form-actions {
   text-align: left;
+  margin: 24px 0;
 }
 
 .form-actions input {
@@ -70,27 +76,13 @@
   margin-top: 16px;
 }
 
-.slides .figure {
-  transition: width 1s ease-in-out;
-}
-
-.slides .figure:hover {
-  width: 250px !important;
-  height: 150px !important;
-  z-index: 100;
-  overflow: visible;
-}
-
 .slides .figure .figure__media {
-  overflow: inherit !important;
+  height: 200px !important;
+  margin-bottom: 0 !important;
 }
 
 .keybinding {
   color: #23b7fb;
-}
-
-.simulators {
-  position: fixed;
 }
 
 .simulators h3 {

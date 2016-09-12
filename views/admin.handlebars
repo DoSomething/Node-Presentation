@@ -3,20 +3,23 @@
     <main>
       <div class="container">
         <div class="wrapper">
-          <div class="container__block -half">
-            <div class="simulators">
+          <div class="simulators">
+            <div class="container__block -half">
               <h3>Preview</h3>
               <div class="simulator -preview"></div>
+            </div>
+            <div class="container__block -half">
               <h3>Live</h3>
               <div class="simulator -live"></div>
             </div>
           </div>
-          <div class="container__block -half controls">
-            <h1>Controls</h1>
+        </div>
+      </div>
+      <div class="container container__controls">
+        <div class="wrapper">
+          <div class="controls">
             {{> generic}}
-            <hr>
             {{> slides}}
-            <hr>
             {{> donations}}
           </div>
         </div>

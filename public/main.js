@@ -130,7 +130,7 @@ function handleEvent($targetHtml, type, data, keepContents) {
   }
 }
 
-function handleGodButton(socket, password) {
+function handleGodButton(socket) {
   var rawText = $('#godtext').val();
   var text = "";
 
@@ -165,17 +165,17 @@ function handleGodButton(socket, password) {
   }
 
   handleEvent($('.-preview'), 'god', text || '', false);
-  socket.emit('preview-event', {'type': 'god', 'data': text, 'password': password});
+  socket.emit('preview-event', {'type': 'god', 'data': text});
 }
 
-function handleDonation(socket, password) {
+function handleDonation(socket) {
   var donation = '"' + $('#donatemessage').val() + '"';
 
   handleEvent($('.-preview'), 'donation', donation, false);
-  socket.emit('preview-event', {'type': 'donation', 'data': donation, 'password': password});
+  socket.emit('preview-event', {'type': 'donation', 'data': donation});
 }
 
-function startup(socket, password) {
+function startup(socket) {
 
   var slides = {};
 
@@ -218,46 +218,46 @@ function startup(socket, password) {
   // ---
 
   $('#godbutton').click(function(e) {
-    handleGodButton(socket, password);
+    handleGodButton(socket);
   });
 
   $('#timerdisplay').click(function(e) {
     var seconds = parseInt($('#timerinput').val()) || 60;
     handleEvent($('.-preview'), 'timer-display', seconds, false);
-    socket.emit('preview-event', {'type': 'timer-display', 'data': seconds, 'password': password});
+    socket.emit('preview-event', {'type': 'timer-display', 'data': seconds});
   });
 
   $('#timerstart').click(function(e) {
-    socket.emit('starttimer', {'password': password});
+    socket.emit('starttimer');
   });
 
   $('#twitterbutton').click(function(e) {
     handleEvent($('.-preview'), 'twitter', {}, false);
-    socket.emit('preview-event', {'type': 'twitter', 'data': {}, 'password': password});
+    socket.emit('preview-event', {'type': 'twitter', 'data': {}});
   });
 
   $('.controls-slide').click(function(e) {
     var path = $(this).attr('src').replace(/\s/g, "%20");
     handleEvent($('.-preview'), 'slide', path, false);
-    socket.emit('preview-event', {'type': 'slide', 'data': path, 'password': password});
+    socket.emit('preview-event', {'type': 'slide', 'data': path});
   });
 
   $('#slideloop').click(function(e) {
     handleEvent($('.-preview'), 'loop', false, false);
-    socket.emit('preview-event', {'type': 'loop', 'data': false, 'password': password});
+    socket.emit('preview-event', {'type': 'loop', 'data': false});
   });
 
   $('.button-golive').click(function(e) {
-    socket.emit('golive', {'password': password});
+    socket.emit('golive');
   });
 
   $('#donatemode').click(function(e) {
     handleEvent($('.-preview'), 'donate', {}, false);
-    socket.emit('preview-event', {'type': 'donate', 'data': {}, 'password': password});
+    socket.emit('preview-event', {'type': 'donate', 'data': {}});
   });
 
   $('#donatedisplay').click(function(e) {
-    handleDonation(socket, password);
+    handleDonation(socket);
   });
 
   $(this).keydown(function(e) {
@@ -265,12 +265,12 @@ function startup(socket, password) {
     var donorInputFocused = $('#donatemessage').is(':focus');
     if (e.keyCode == 13) {
       if (godInputFocused) {
-        handleGodButton(socket, password);
+        handleGodButton(socket);
       }
       else if (donorInputFocused) {
-        handleDonation(socket, password);
+        handleDonation(socket);
       }
-      socket.emit('golive', {'password': password});
+      socket.emit('golive');
     }
     else if (!godInputFocused && !donorInputFocused) {
       var bind = String.fromCharCode(e.keyCode).toLowerCase();
@@ -278,34 +278,13 @@ function startup(socket, password) {
       if (slide != undefined) {
         var path = slide.path.replace(/\s/g, "%20");
         handleEvent($('.-preview'), 'slide', path, false);
-        socket.emit('preview-event', {'type': 'slide', 'data': path, 'password': password});
+        socket.emit('preview-event', {'type': 'slide', 'data': path});
       }
-    }
-  });
-
-  $(this).keydown(function(e) {
-    if (e.keyCode == 13) {
-      enterPressed = false;
-    }
-    else if(e.shiftKey) {
-      shiftPressed = false;
     }
   });
 }
 
 $(document).on('ready', function() {
   var socket = io.connect(location.host);
-  var pass = "";
-
-  socket.on('login-response', function(data) {
-    if (data == true) {
-      $('.login').remove();
-      startup(socket, pass);
-    }
-  });
-
-  $('#password-subumit').on('click', function() {
-    pass = $('#password').val();
-    socket.emit('login', pass);
-  });
+  startup(socket);
 });
