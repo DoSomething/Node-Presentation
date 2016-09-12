@@ -19,6 +19,7 @@
   "homepage": "https://github.com/DoSomething/Node-Presentation#readme",
   "dependencies": {
     "@dosomething/forge": "^6.6.2",
+    "basic-auth": "^1.0.4",
     "express": "^4.13.4",
     "express-handlebars": "^3.0.0",
     "path": "^0.12.7",
