@@ -100,10 +100,11 @@
   font-weight: 400;
   text-align: center;
   font-size: inherit;
+  word-wrap: break-word;
 }
 
 .-live .god-message {
-  line-height: 1.2em;
+  line-height: .75emem;
 }
 
 .god-message b {
@@ -126,6 +127,7 @@
 
 .present-container, .simulator {
   background-size: 100% 100% !important;
+  overflow-y: hidden;
 }
 
 .present-container {
