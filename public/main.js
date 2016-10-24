@@ -9,7 +9,7 @@ function getOptimalFontSize($container) {
     div.style.fontSize = fontSize + 'px';
     fontSize++;
     changes++;
-    if (changes > 500) {
+    if (changes > 300) {
         success = false;
         break;
     }
