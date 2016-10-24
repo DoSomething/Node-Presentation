@@ -30,8 +30,8 @@ app.use(express.static(path.join(__dirname, 'node_modules/@dosomething/forge/dis
 const slides = require(__dirname + '/slides');
 slides.addSlides(slides.readFiles('/slides', true, true));
 
-const rawLoop = slides.readFiles('/loop', false, false);
-slides.setLoop(slides.sortLoop(rawLoop));
+// const rawLoop = slides.readFiles('/loop', false, false);
+// slides.setLoop(slides.sortLoop(rawLoop));
 
 const twitter = require(__dirname + '/twitter');
 twitter.start(function(tweet) {
