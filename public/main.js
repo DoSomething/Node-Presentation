@@ -95,10 +95,11 @@ function handleEvent($targetHtml, type, data, keepContents) {
       break;
     case 'timer-display':
       $targetHtml.append('<h1 class="countdown god-message">' + data + '</h1>');
-      $targetHtml.css('background', 'url(20.%20CountdownScreen-black.png)');
+      $targetHtml.css('background', 'url(countdown-regular.png)');
       break;
     case 'timer-pulse':
-      $targetHtml.css('background', 'url(21.%20CountdownScreen-pulse.png)');
+      $targetHtml.find('.countdown').addClass('pulse');
+      $targetHtml.css('background', 'url(countdown-pulse.png)');
       break;
     case 'timer-tick':
       $targetHtml.find('.countdown').text(data);

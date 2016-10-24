@@ -118,6 +118,12 @@
   font-size: 48px;
 }
 
+.present-container.-live .countdown {
+  font-size: 500px;
+  font-weight: 800;
+  line-height: 1000px;
+}
+
 .present-container, .simulator {
   background-size: 100% 100% !important;
 }
@@ -189,4 +195,21 @@
 
 .donation-message span {
   text-shadow: 0 1px 3px rgba(255, 64, 121, 0.9);
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pulse {
+  animation-duration: 1s;
+  animation: pulse 1s infinite;
 }
