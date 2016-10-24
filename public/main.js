@@ -104,7 +104,7 @@ function handleEvent($targetHtml, type, data, keepContents) {
       $targetHtml.find('.countdown').text(data);
       break;
     case 'twitter':
-      $targetHtml.css('background', 'url(23.%20Twitter%20Screen-blank.png)');
+      $targetHtml.css('background', 'url(twitter.png)');
       $targetHtml.append('<div class="tweet-container"></div>')
       break;
     case 'tweet':
@@ -115,7 +115,7 @@ function handleEvent($targetHtml, type, data, keepContents) {
       }
       else {
         $targetHtml.children().prepend(data);
-        if ($('.tweet').size() > 4) {
+        if ($('.tweet').size() > 3) {
           $('.tweet').last().remove();
         }
       }
