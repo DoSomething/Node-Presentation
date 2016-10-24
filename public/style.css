@@ -142,6 +142,10 @@
   margin: 0 auto;
 }
 
+.present-container.-live .tweet-container {
+  margin-top: 128px;
+}
+
 .present-container .tweet {
   height: 200px;
   padding-top: 32px;
