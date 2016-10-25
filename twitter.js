@@ -32,7 +32,7 @@ function formatTweet(data) {
   var pic = data.user.profile_image_url.replace('_normal', '');
   var oddClass = odd ? 'odd' : '';
 
-  var markup_photo = `<div class="tweet-photo" style="background: url(${pic})"></div>`;
+  var markup_photo = `<div class="tweet-photo" style="background: url(${pic}); background-size: cover;"></div>`;
   var markup_info = `<div class="tweet-info"> <p><span class="-yellow">${handle}</span></p> <p class="tweet-text">${text}</p> </div>`;
   var markup = `<div class="tweet ${oddClass}">`;
   if (odd) {
