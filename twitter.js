@@ -1,6 +1,5 @@
 var Twitter = require('twitter');
-// var hashtag = '#DS2016';
-var hashtag = 'GilmoreGirls';
+var hashtag = '#DS2016';
 
 var client = new Twitter({
   consumer_key: process.env.TWITTER_CONSUMER_KEY,
