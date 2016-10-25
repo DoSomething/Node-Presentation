@@ -54,10 +54,18 @@ function formatTweet(data) {
   return markup;
 }
 
+function numDaysBetween (d1, d2) {
+  var diff = Math.abs(d1.getTime() - d2.getTime());
+  return diff / (1000 * 60 * 60 * 24);
+}
+
 this.start = function(callback) {
 
   client.get('search/tweets', {q: hashtag}, function (error, tweets, response) {
       for (var i in tweets.statuses) {
+          if (numDaysBetween(new Date(tweets.statuses[i].created_at), new Date()) > 1) {
+            continue;
+          }
           var tweet = formatTweet(tweets.statuses[i]);
           callback(tweet);
       }
