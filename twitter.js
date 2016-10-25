@@ -1,5 +1,6 @@
 var Twitter = require('twitter');
-var hashtag = '#DS2016';
+// var hashtag = '#DS2016';
+var hashtag = 'GilmoreGirls';
 
 var client = new Twitter({
   consumer_key: process.env.TWITTER_CONSUMER_KEY,
@@ -59,9 +60,9 @@ function numDaysBetween (d1, d2) {
   return diff / (1000 * 60 * 60 * 24);
 }
 
-this.start = function(callback) {
-
+function fetch(callback) {
   client.get('search/tweets', {q: hashtag}, function (error, tweets, response) {
+      tweets.statuses.reverse();
       for (var i in tweets.statuses) {
           if (numDaysBetween(new Date(tweets.statuses[i].created_at), new Date()) > 1) {
             continue;
@@ -69,24 +70,36 @@ this.start = function(callback) {
           var tweet = formatTweet(tweets.statuses[i]);
           callback(tweet);
       }
+
+      setTimeout(function() {
+        fetch(callback)
+      }, 60 * 1000);
   });
+}
 
-  client.stream('statuses/filter', {track: hashtag}, function (stream) {
-      stream.on('data', function (data) {
+this.start = function(callback) {
 
-          for (var i in curseWords) {
-              if (data.text == undefined) {
-                return;
-              }
-              if (data.text.toLowerCase().indexOf(curseWords[i]) >= 0) {
-                return;
-              }
-          }
+  fetch(callback);
 
-          var tweet = formatTweet(data);
-          callback(tweet);
-      });
-  });
+  // client.stream('statuses/filter', {track: hashtag}, function (stream) {
+  //     stream.on('data', function (data) {
+  //         for (var i in curseWords) {
+  //             if (data.text == undefined) {
+  //               return;
+  //             }
+  //             if (data.text.toLowerCase().indexOf(curseWords[i]) >= 0) {
+  //               return;
+  //             }
+  //         }
+  //
+  //         var tweet = formatTweet(data);
+  //         callback(tweet);
+  //     });
+  //
+  //     stream.on('error', function(err) {
+  //       console.log(err);
+  //     })
+  // });
 
 }
 
